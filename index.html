@@ -95,7 +95,7 @@ function initializeClock(id,endtime) {var clock=document.getElementById(id);if(!
 hoursSpan.innerHTML=('0' + time.hours).slice(-2);minutesSpan.innerHTML=('0' + time.minutes).slice(-2);secondsSpan.innerHTML=('0' + time.seconds).slice(-2);if(time.total<=0) {clearInterval(timeInterval);}}
 updateClock();var timeInterval=setInterval(updateClock,1000);}
 var deadlineDate="2026-09-19".trim();var deadlineTime="17:00".trim();var deadlineUtc="00:00".trim();if(deadlineUtc.charAt(0)!=='-'&&deadlineUtc.charAt(0)!=='+') {deadlineUtc='+' + deadlineUtc;}
-deadlineDate=handleOverflowMonth(deadlineDate);var deadline=new Date(deadlineDate + 'T' +('0' + deadlineTime).slice(-5) + deadlineUtc);initializeClock('t415__timer2295139623',deadline);});</script> <style>#rec2295139623 .t415__descr-second,#rec2295139623 .t415__hint{color:#ffffff;}</style> <style>#rec2295139623 .t415__uptitle{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__title{color:#ffffff;font-family:var(--t-text-font,Arial);font-weight:300;}@media screen and (min-width:900px){#rec2295139623 .t415__title{font-size:92px;}}@media screen and (min-width:480px) and (max-width:900px){#rec2295139623 .t415__title{font-size:40px;}}@media screen and (max-width:480px),(orientation:landscape) and (max-height:480px){#rec2295139623 .t415__title{font-size:40px;}}#rec2295139623 .t415__descr{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__descr-second{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__hint{color:#ffffff;font-family:'One';font-weight:400;}</style> </div> <div id="rec2295139633" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <audio id="my_pleer" preload="auto" autoplay loop muted playsinline> <source src="https://dl.dropbox.com/scl/fi/2gkcwjbj4iml3g19p3ia7/.mp3?rlkey=dtf4gjlhkty0g572ghc62xteb&amp;st=iherpqe2&amp;dl=0"> </audio> <style>.playbtnbg,
+deadlineDate=handleOverflowMonth(deadlineDate);var deadline=new Date(deadlineDate + 'T' +('0' + deadlineTime).slice(-5) + deadlineUtc);initializeClock('t415__timer2295139623',deadline);});</script> <style>#rec2295139623 .t415__descr-second,#rec2295139623 .t415__hint{color:#ffffff;}</style> <style>#rec2295139623 .t415__uptitle{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__title{color:#ffffff;font-family:var(--t-text-font,Arial);font-weight:300;}@media screen and (min-width:900px){#rec2295139623 .t415__title{font-size:92px;}}@media screen and (min-width:480px) and (max-width:900px){#rec2295139623 .t415__title{font-size:40px;}}@media screen and (max-width:480px),(orientation:landscape) and (max-height:480px){#rec2295139623 .t415__title{font-size:40px;}}#rec2295139623 .t415__descr{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__descr-second{color:#ffffff;font-family:'One';font-weight:400;}#rec2295139623 .t415__hint{color:#ffffff;font-family:'One';font-weight:400;}</style> </div> <div id="rec2295139633" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <audio id="my_pleer" preload="auto" autoplay muted playsinline> <source src="Altynai_Tulembetova_Qyzga_tilek%20(1).mp3" type="audio/mpeg"> </audio> <style>.playbtnbg,
 .stopbtnbg {
   cursor: pointer;
 }
@@ -112,14 +112,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!audio) return;
 
+  const musicStartAt = 22;
+
+  function seekToMusicStart(force) {
+    if (audio.readyState === 0) return;
+    if (force || audio.currentTime < musicStartAt - 0.25) {
+      try {
+        audio.currentTime = musicStartAt;
+      } catch (error) {}
+    }
+  }
+
   audio.volume = 0.4;
+  audio.addEventListener('loadedmetadata', function () {
+    seekToMusicStart(true);
+  });
+  audio.addEventListener('play', function () {
+    seekToMusicStart(false);
+  });
 
   // автозапуск БЕЗ звука (разрешено браузерами)
+  seekToMusicStart(true);
   audio.play().catch(() => {});
 
   // первый РЕАЛЬНЫЙ клик пользователя — включаем звук
   function enableSound() {
     audio.muted = false;
+    seekToMusicStart(false);
     audio.play().catch(() => {});
     document.removeEventListener('click', enableSound);
     document.removeEventListener('touchstart', enableSound);
@@ -134,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
   playBtn.addEventListener('click', function (e) {
     e.preventDefault();
     audio.muted = false;
+    seekToMusicStart(false);
     audio.play();
     playBtn.style.display = 'none';
     stopBtn.style.display = 'block';
@@ -148,8 +168,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   audio.addEventListener('ended', function () {
-    stopBtn.style.display = 'none';
-    playBtn.style.display = 'block';
+    seekToMusicStart(true);
+    audio.play().catch(() => {
+      stopBtn.style.display = 'none';
+      playBtn.style.display = 'block';
+    });
   });
 
 });
