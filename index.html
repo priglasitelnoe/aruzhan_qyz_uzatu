@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><style
 #rec2295139603 .tn-elem[data-elem-id="1777057454355"],#rec2295139603 .tn-elem[data-elem-id="175829290010570910"]{display:none!important;}
 #rec2295139603 .tn-elem[data-elem-id="175822190832755000"]{left:calc(50% - 160px + -35px)!important;width:390px!important;max-width:none!important;}
 #rec2295139603 .tn-elem[data-elem-id="175822190832755000"] .tn-atom{display:block!important;width:100%!important;font-size:13px!important;line-height:1.15!important;white-space:nowrap!important;text-align:center!important;}
-#rec2295139603 .aruzhan-september-calendar{position:absolute;z-index:20;top:1430px;left:calc(50% - 160px + 16px);width:288px;color:#5b503f;text-align:center;font-family:var(--t-text-font,Arial);box-sizing:border-box;}
+#rec2295139603 .aruzhan-september-calendar{position:absolute;z-index:20;top:1135px;left:calc(50% - 160px + 16px);width:288px;color:#5b503f;text-align:center;font-family:var(--t-text-font,Arial);box-sizing:border-box;}
 #rec2295139603 .aruzhan-september-calendar__week,#rec2295139603 .aruzhan-september-calendar__grid{display:grid;grid-template-columns:repeat(7,1fr);align-items:center;}
 #rec2295139603 .aruzhan-september-calendar__week{margin-bottom:24px;font-size:17px;line-height:1;font-weight:400;letter-spacing:0;text-transform:uppercase;}
 #rec2295139603 .aruzhan-september-calendar__grid{row-gap:16px;font-size:20px;line-height:30px;font-weight:300;}
@@ -341,6 +341,55 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
   setTimeout(initWhatsappForm, 2000);
   new MutationObserver(initWhatsappForm).observe(document.documentElement, { childList: true, subtree: true });
 })();
+  (function () {
+    const recSelector = '#rec2295139603';
+    const calendarSelector = '.aruzhan-september-calendar';
+    const dateSelector = '.tn-elem[data-elem-id="175856826133170030"]';
+    const addressSelector = '.tn-elem[data-elem-id="175829092512162710"]';
+
+    function placeCalendar() {
+      const rec = document.querySelector(recSelector);
+      const artboard = rec && rec.querySelector('.t396__artboard');
+      const calendar = rec && rec.querySelector(calendarSelector);
+      const date = rec && rec.querySelector(dateSelector);
+      if (!artboard || !calendar || !date) return;
+
+      const artboardRect = artboard.getBoundingClientRect();
+      const dateRect = date.getBoundingClientRect();
+      const calendarRect = calendar.getBoundingClientRect();
+      const dateBottom = dateRect.bottom - artboardRect.top;
+      if (dateRect.height < 5 || artboardRect.height < 100 || dateBottom < 500) return;
+
+      const minTop = dateBottom + 16;
+      let top = dateBottom + 24;
+
+      const address = rec.querySelector(addressSelector);
+      if (address) {
+        const addressRect = address.getBoundingClientRect();
+        const maxTop = addressRect.top - artboardRect.top - calendarRect.height - 18;
+        if (maxTop >= minTop) top = Math.min(top, maxTop);
+      }
+
+      calendar.style.top = Math.round(Math.max(top, minTop)) + 'px';
+    }
+
+    let frame = null;
+    function scheduleCalendarPlace() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(placeCalendar);
+    }
+
+    document.addEventListener('DOMContentLoaded', scheduleCalendarPlace);
+    window.addEventListener('load', scheduleCalendarPlace);
+    window.addEventListener('resize', scheduleCalendarPlace);
+    window.addEventListener('orientationchange', function () {
+      setTimeout(scheduleCalendarPlace, 250);
+    });
+
+    [100, 500, 1200, 2500].forEach(function (delay) {
+      setTimeout(scheduleCalendarPlace, delay);
+    });
+  })();
 </script> </body> </html>
 
 
